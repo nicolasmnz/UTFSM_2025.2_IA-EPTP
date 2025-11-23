@@ -26,12 +26,14 @@ private:
     vector<vector<int>> distancias_;     // matriz d[i][j]
     vector<Usuario> usuarios_;           // información de cada usuario
 public:
-    Instance() = default;
+    // Constructor por defecto:
+    Instance() = default; 
+    // Constructor personalizado:
     Instance(int n_, 
             const vector<Nodo>& nodos_,
             const vector<vector<int>>& distancias_, 
             const vector<Usuario>& usuarios_)
-        : n_(n_), nodos_(nodos_), distancias_(distancias_), usuarios_(usuarios_) {}
+        : n_(n_), nodos_(nodos_), distancias_(distancias_), usuarios_(usuarios_) {} 
     
     // --- Consultas básicas ---
     int n() const { return n_; }

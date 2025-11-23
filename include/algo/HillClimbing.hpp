@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Solution hillClimbingBestImprovement(const Instance& I,
+Solution hillClimbingFirstImprovement(const Instance& I,
                                      const Usuario& u,
                                      mt19937& rng,
                                      int maxIter,

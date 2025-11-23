@@ -7,7 +7,17 @@
 
 using namespace std;
 
+
+vector<Solution> agregarNodo(const Solution& S,
+                             const Instance& I,
+                             mt19937& rng);
+            
+vector<Solution> eliminarNodo(const Solution& S,
+                              const Instance& I,
+                              mt19937& rng);
+
+vector<Solution> twoOpt(const Solution& S);
+
 vector<Solution> generarVecindad(const Solution& S,
                                  const Instance& I,
-                                 const Usuario& u,
                                  mt19937& rng);

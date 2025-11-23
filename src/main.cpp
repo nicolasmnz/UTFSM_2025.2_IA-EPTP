@@ -29,3 +29,19 @@ int main() {
 
     return 0;
 }
+
+/*
+ Instance inst = Parser::cargar("instancia.txt");
+
+    mt19937 rng(1234);
+
+    for (int k = 0; k < inst.cantidadUsuarios(); k++) {
+
+        Solution S0(k); // solución para usuario k
+        S0 = generarSolucionInicial(inst, k, rng);
+
+        Solution Sopt = hillClimbing(S0, inst, rng);
+
+        imprimirSalida(Sopt);
+        guardarSalida(Sopt, "usuario_" + to_string(k) + ".txt");
+*/
