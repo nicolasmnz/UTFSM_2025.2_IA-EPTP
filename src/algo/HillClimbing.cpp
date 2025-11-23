@@ -1,46 +1,41 @@
-#include "../../include/all.hpp"
+#include "../../include/algo/HillClimbing.hpp"
+#include "../../include/algo/Neighborhood.hpp"
+#include "../../include/algo/Evaluation.hpp"
 
-#include <random>
-#include <algorithm>
+Solution hillClimbing(const Instance& I,
+                      const Usuario& u,
+                      const Solution& S0,
+                      int maxIter,
+                      mt19937& rng)
+{
+    // Partimos de la solución inicial y nos aseguramos de que esté evaluada
+    Solution S = S0;
+    evaluar(S, I, u);
 
-using namespace std;
+    for (int it = 0; it < maxIter; ++it)
+    {
+        // Generar vecindad de S (agregar/quitar por ruleta)
+        auto vecinos = generarVecindad(S, I, rng);
 
-Solution hillClimbingFirstImprovement(const Instance& I, const Usuario& u, mt19937& rng, int maxIter, int maxRestarts) {
-    Solution mejorSolucion;
-    double mejorValor = -1e9;
-    
-    for (int restart = 0; restart < maxRestarts; restart++) {
-        // Construir solución inicial
-        Solution current = construirSolucionInicial(I, u, rng);
-        current.usuario = 0; // Se asignará correctamente
-        
-        bool mejora = true;
-        int iter = 0;
-        
-        while (mejora && iter < maxIter) {
-            mejora = false;
-            
-            // Generar vecindad
-            vector<Solution> vecindad = generarVecindad(current, I, rng);
-            
-            // Buscar primera mejora
-            for (const auto& vecino : vecindad) {
-                if (vecino.valor > current.valor) {
-                    current = vecino;
-                    mejora = true;
-                    break;
-                }
+        bool hayMejora = false;
+
+        // FIRST-IMPROVEMENT:
+        // recorre los vecinos y acepta el primero que mejore el valor
+        for (auto& V : vecinos)
+        {
+            if (!evaluar(V, I, u)) continue;  // descarta inviables
+
+            if (V.valor > S.valor)           // mejora estricta
+            {
+                S = V;                       // aceptamos este vecino
+                hayMejora = true;
+                break;                       // salimos del for de vecinos
             }
-            
-            iter++;
         }
-        
-        // Actualizar mejor solución global
-        if (current.valor > mejorValor) {
-            mejorSolucion = current;
-            mejorValor = current.valor;
-        }
+
+        if (!hayMejora)
+            break;  // no encontramos mejora en esta iteración => terminamos
     }
-    
-    return mejorSolucion;
+
+    return S;
 }

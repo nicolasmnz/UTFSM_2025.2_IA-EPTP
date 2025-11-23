@@ -1,9 +1,14 @@
 #pragma once
-#include "../model/Solution.hpp"
+
 #include "../model/Instance.hpp"
+#include "../model/Solution.hpp"
 #include <random>
 
-Solution hillClimbing(const Solution& S0,
-                      const Instance& I,
+using namespace std;
+
+// Hill Climbing *first-improvement* para un usuario dado.
+Solution hillClimbing(const Instance& I,
+                      const Usuario& u,
+                      const Solution& S0,
                       int maxIter,
-                      std::mt19937& rng);
+                      mt19937& rng);

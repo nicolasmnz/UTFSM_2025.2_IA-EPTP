@@ -1,19 +1,42 @@
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O3 -I./include
-SRCDIR = src
-OBJDIR = obj
-SOURCES = $(shell find $(SRCDIR) -name '*.cpp')
-OBJECTS = $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
-TARGET = eptp_solver
+# ================== CONFIGURACIÓN BÁSICA ==================
+CXX      = g++
+CXXFLAGS = -std=gnu++17 -O2 -Wall -Wextra -Iinclude
 
-$(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+# Nombre del ejecutable
+TARGET = eptp
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(dir $@)
+# ================== FUENTES ==================
+SRCS = \
+    main.cpp \
+    src/algo/Construction.cpp \
+    src/algo/Evaluation.cpp \
+    src/algo/HillClimbing.cpp \
+    src/algo/Neighborhood.cpp \
+    src/io/Parser.cpp \
+    src/io/Output.cpp
+
+OBJS = $(SRCS:.cpp=.o)
+
+# ================== REGLAS PRINCIPALES ==================
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ 
+
+# Regla genérica: cómo compilar cualquier .cpp -> .o
+%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-clean:
-	rm -rf $(OBJDIR) $(TARGET)
+# ================== ATAJOS DE EJECUCIÓN ==================
 
-.PHONY: clean
+# Ejecutar sobre TODAS las instancias
+run: $(TARGET)
+	./$(TARGET)
+
+# Ejecutar el modo ejemplo (usa data/ejemplo.txt, data/usuarios.txt)
+ejemplo: $(TARGET)
+	./$(TARGET) ejemplo
+
+# ================== LIMPIEZA ==================
+clean:
+	rm -f $(OBJS) $(TARGET)
