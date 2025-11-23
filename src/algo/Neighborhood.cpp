@@ -1,92 +1,71 @@
-#include "../../include/all.hpp"
-
+#include "../../include/algo/Neighborhood.hpp"
 #include <algorithm>
-#include <random>
 
-using namespace std;
+using std::vector;
 
-vector<Solution> agregarNodo(const Solution& S, const Instance& I, mt19937& rng) {
+// ------------------------ AGREGAR NODO ------------------------
+vector<Solution> agregarNodo(const Solution& S,
+                             const Instance& I,
+                             std::mt19937& rng)
+{
     vector<Solution> vecinos;
-    int n = I.n();
-    
-    // Generar lista de nodos no visitados
-    vector<int> nodosNoVisitados;
-    for (int i = 1; i < n; i++) {
-        if (find(S.tour.begin(), S.tour.end(), i) == S.tour.end()) {
-            nodosNoVisitados.push_back(i);
-        }
+
+    // nodos no usados (1..n-1)
+    vector<int> no_usados;
+    for (int v = 1; v < I.n(); ++v) {
+        if (std::find(S.tour.begin(), S.tour.end(), v) == S.tour.end())
+            no_usados.push_back(v);
     }
-    
-    shuffle(nodosNoVisitados.begin(), nodosNoVisitados.end(), rng);
-    
-    // Probar insertar cada nodo no visitado en cada posición posible
-    for (int nodo : nodosNoVisitados) {
-        for (size_t pos = 1; pos <= S.tour.size(); pos++) {
-            Solution nuevo = S;
-            nuevo.tour.insert(nuevo.tour.begin() + pos, nodo);
-            
-            if (recalcularCronograma(nuevo, I, I.usuarios()[S.usuario])) {
-                nuevo.valor = evaluar(nuevo, I, I.usuarios()[S.usuario]);
-                vecinos.push_back(nuevo);
-            }
-        }
+    if (no_usados.empty()) return vecinos;
+
+    std::uniform_int_distribution<int> dist(0, (int)no_usados.size() - 1);
+    int nodoNuevo = no_usados[dist(rng)];
+
+    // generar vecinos insertando nodoNuevo en todas las posiciones internas
+    int m = (int)S.tour.size();
+    // evitamos sobreescribir la posición 0 y la última si son depósitos
+    for (int pos = 1; pos < m; ++pos) {
+        Solution V = S;
+        V.tour.insert(V.tour.begin() + pos, nodoNuevo);
+        vecinos.push_back(V);
     }
-    
     return vecinos;
 }
 
-vector<Solution> eliminarNodo(const Solution& S, const Instance& I, mt19937& rng) {
+// ------------------------ ELIMINAR NODO ------------------------
+vector<Solution> eliminarNodo(const Solution& S,
+                              const Instance& /*I*/,
+                              std::mt19937& rng)
+{
     vector<Solution> vecinos;
-    
-    // No podemos eliminar el primer nodo (nodo 1/depósito)
-    if (S.tour.size() <= 2) return vecinos;
-    
-    // Probar eliminar cada nodo (excepto el primero)
-    for (size_t i = 1; i < S.tour.size(); i++) {
-        Solution nuevo = S;
-        nuevo.tour.erase(nuevo.tour.begin() + i);
-        
-        if (recalcularCronograma(nuevo, I, I.usuarios()[S.usuario])) {
-            nuevo.valor = evaluar(nuevo, I, I.usuarios()[S.usuario]);
-            vecinos.push_back(nuevo);
-        }
-    }
-    
+
+    int m = (int)S.tour.size();
+    if (m <= 2) return vecinos; // solo depósito->depósito
+
+    // elegimos una posición interna aleatoria (no el depósito inicial ni final)
+    std::uniform_int_distribution<int> dist(1, m - 2);
+    int pos = dist(rng);
+
+    Solution V = S;
+    V.tour.erase(V.tour.begin() + pos);
+    vecinos.push_back(V);
+
     return vecinos;
 }
 
-vector<Solution> twoOpt(const Solution& S, const Instance& I) {
-    vector<Solution> vecinos;
-    
-    if (S.tour.size() < 4) return vecinos; // Necesitamos al menos 3 nodos + depósito
-    
-    // Aplicar 2-opt a todos los pares posibles
-    for (size_t i = 1; i < S.tour.size() - 2; i++) {
-        for (size_t j = i + 1; j < S.tour.size() - 1; j++) {
-            Solution nuevo = S;
-            reverse(nuevo.tour.begin() + i, nuevo.tour.begin() + j + 1);
-            
-            if (recalcularCronograma(nuevo, I, I.usuarios()[S.usuario])) {
-                nuevo.valor = evaluar(nuevo, I, I.usuarios()[S.usuario]);
-                vecinos.push_back(nuevo);
-            }
-        }
-    }
-    
-    return vecinos;
-}
+// ------------------------ COMBINAR VECINDAD ------------------------
+vector<Solution> generarVecindad(const Solution& S,
+                                 const Instance& I,
+                                 std::mt19937& rng)
+{
+    vector<Solution> N;
 
-vector<Solution> generarVecindad(const Solution& S, const Instance& I, mt19937& rng) {
-    vector<Solution> vecindadCompleta;
-    
-    // Combinar todos los tipos de movimientos
-    vector<Solution> agregar = agregarNodo(S, I, rng);
-    vector<Solution> eliminar = eliminarNodo(S, I, rng);
-    vector<Solution> twoOptVecinos = twoOpt(S, I);
-    
-    vecindadCompleta.insert(vecindadCompleta.end(), agregar.begin(), agregar.end());
-    vecindadCompleta.insert(vecindadCompleta.end(), eliminar.begin(), eliminar.end());
-    vecindadCompleta.insert(vecindadCompleta.end(), twoOptVecinos.begin(), twoOptVecinos.end());
-    
-    return vecindadCompleta;
+    auto A = agregarNodo(S, I, rng);
+    auto E = eliminarNodo(S, I, rng);
+
+    N.reserve(A.size() + E.size());
+    N.insert(N.end(), A.begin(), A.end());
+    N.insert(N.end(), E.begin(), E.end());
+
+    return N;
 }

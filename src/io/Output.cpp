@@ -1,37 +1,30 @@
-#include "Output.hpp"
+#include "../../include/io/Output.hpp"
 #include <iostream>
 #include <fstream>
 
-using namespace std;
+using std::string;
 
-void print(const Solution& S, const Instance& I, const Usuario& u, int idUsuario) {
-    cout << "Usuario " << idUsuario << ":" << endl;
-    cout << "Valor del tour: " << S.valor << endl;
-    cout << "Tiempo disponible: " << I.tiempoMaximo(idUsuario);
-    cout << ", Tiempo empleado: " << S.R << endl;
-    cout << "Tour: ";
-    for (size_t i = 0; i < S.tour.size(); i++) {
-        cout << S.tour[i] + 1; // Mostrar números comenzando desde 1
-        if (i < S.tour.size() - 1) cout << " ";
-    }
-    cout << endl << endl;
+void imprimirSolucion(const Solution& S)
+{
+    std::cout << "Tour: ";
+    for (int v : S.tour) std::cout << v << " ";
+    std::cout << "\nValor: " << S.valor
+              << "\nTiempo total: " << S.R << "\n";
 }
 
-void write(const Solution& S, const Instance& I, const Usuario& u, int idUsuario, const fs::path& carpetaSalida) {
-    // Crear directorio si no existe
-    fs::create_directories(carpetaSalida);
-    
-    fs::path archivoSalida = carpetaSalida / ("usuario_" + to_string(idUsuario) + ".txt");
-    ofstream archivo(archivoSalida);
-    
-    if (archivo.is_open()) {
-        archivo << static_cast<int>(S.valor) << endl;
-        archivo << I.tiempoMaximo(idUsuario) << " " << S.R << endl;
-        for (size_t i = 0; i < S.tour.size(); i++) {
-            archivo << S.tour[i] + 1; // Mostrar números comenzando desde 1
-            if (i < S.tour.size() - 1) archivo << " ";
-        }
-        archivo << endl;
-        archivo.close();
-    }
+void guardarCSV(const string& file,
+                const string& instancia,
+                int usuario,
+                int iteracion,
+                int valor,
+                double tiempo_ms)
+{
+    std::ofstream f(file, std::ios::app);
+    if (!f) return;
+
+    f << instancia << ","
+      << usuario << ","
+      << iteracion << ","
+      << valor << ","
+      << tiempo_ms << "\n";
 }

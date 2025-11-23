@@ -1,27 +1,19 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -O2
+CXXFLAGS = -std=c++17 -Wall -Wextra -O3 -I./include
 SRCDIR = src
 OBJDIR = obj
-BINDIR = bin
-
-SOURCES = $(wildcard $(SRCDIR)/**/*.cpp $(SRCDIR)/*.cpp)
+SOURCES = $(shell find $(SRCDIR) -name '*.cpp')
 OBJECTS = $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
-TARGET = $(BINDIR)/eppt
+TARGET = eptp_solver
 
-$(TARGET): $(OBJECTS) | $(BINDIR)
-	$(CXX) $(OBJECTS) -o $@
+$(TARGET): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BINDIR):
-	@mkdir -p $(BINDIR)
-
-$(OBJDIR):
-	@mkdir -p $(OBJDIR)
-
 clean:
-	rm -rf $(OBJDIR) $(BINDIR)
+	rm -rf $(OBJDIR) $(TARGET)
 
 .PHONY: clean

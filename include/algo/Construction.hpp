@@ -2,13 +2,10 @@
 
 #include "../model/Instance.hpp"
 #include "../model/Solution.hpp"
-
 #include <random>
-#include <algorithm>
-#include <vector>
 
-using namespace std;
-
+// Construye una solución inicial factible (si es posible)
+// para un usuario específico u_k.
 Solution construirSolucionInicial(const Instance& I,
                                   const Usuario& u,
-                                  mt19937& rng);
+                                  std::mt19937& rng);

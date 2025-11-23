@@ -1,8 +1,16 @@
 #pragma once
 
 #include "../model/Instance.hpp"
-#include <filesystem>
+#include <string>
 
-namespace fs = std::filesystem;;
+class Parser
+{
+public:
+    // Carga un ejemplo simple (data/ejemplo.txt, data/usuarios.txt)
+    static Instance cargarEjemplo(const std::string& nodosFile,
+                                  const std::string& usuariosFile);
 
-Instance leerInstancia(const fs::path& ruta);
+    // Carga una instancia general: archivo de nodos + archivo de usuarios
+    static Instance cargarInstancia(const std::string& nodosFile,
+                                    const std::string& usuariosFile);
+};

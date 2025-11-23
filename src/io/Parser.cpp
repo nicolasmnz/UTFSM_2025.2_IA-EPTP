@@ -1,70 +1,77 @@
-#include "Parser.hpp"
+#include "../../include/io/Parser.hpp"
 #include <fstream>
-#include <sstream>
-#include <iostream>
+#include <stdexcept>
 
-using namespace std;
+using std::string;
+using std::vector;
 
-Instance leerInstancia(const fs::path& ruta) {
-    ifstream archivo(ruta);
-    if (!archivo.is_open()) {
-        throw runtime_error("No se pudo abrir el archivo: " + ruta.string());
-    }
-    
-    // Leer número de nodos
+Instance Parser::cargarEjemplo(const string& nodosFile,
+                               const string& usuariosFile)
+{
+    return cargarInstancia(nodosFile, usuariosFile);
+}
+
+// Formato asumido:
+//
+// nodosFile:
+//   n
+//   (n líneas): tiempo_servicio inicio_servicio fin_servicio
+//   (n x n enteros): matriz de distancias
+//
+// usuariosFile:
+//   U
+//   para cada usuario u:
+//       tiempo_total
+//       n enteros: valor_nodo[i]
+//       n x n enteros: valor_arcos[i][j]
+//
+Instance Parser::cargarInstancia(const string& nodosFile,
+                                 const string& usuariosFile)
+{
+    std::ifstream fn(nodosFile);
+    if (!fn) throw std::runtime_error("No se pudo abrir " + nodosFile);
+
     int n;
-    archivo >> n;
-    
-    // Leer tiempos de servicio
+    fn >> n;
+    if (!fn) throw std::runtime_error("Error leyendo n en " + nodosFile);
+
     vector<Nodo> nodos(n);
-    for (int i = 0; i < n; i++) {
-        archivo >> nodos[i].tiempo_servicio;
+    for (int i = 0; i < n; ++i) {
+        fn >> nodos[i].tiempo_servicio
+           >> nodos[i].inicio_servicio
+           >> nodos[i].fin_servicio;
     }
-    
-    // Leer ventanas de tiempo
-    for (int i = 0; i < n; i++) {
-        archivo >> nodos[i].inicio_servicio >> nodos[i].fin_servicio;
-    }
-    
-    // Leer matriz de distancias
-    vector<vector<int>> distancias(n, vector<int>(n));
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            archivo >> distancias[i][j];
-        }
-    }
-    
-    archivo.close();
-    
-    // Leer archivo de usuarios (asumiendo que tiene el mismo nombre base)
-    fs::path rutaUsuarios = ruta.parent_path() / "usuarios.txt";
-    ifstream archivoUsuarios(rutaUsuarios);
-    
-    if (!archivoUsuarios.is_open()) {
-        throw runtime_error("No se pudo abrir el archivo de usuarios: " + rutaUsuarios.string());
-    }
-    
-    int m;
-    archivoUsuarios >> m;
-    
-    vector<Usuario> usuarios(m);
-    for (int k = 0; k < m; k++) {
-        archivoUsuarios >> usuarios[k].tiempo_total;
-        
+
+    vector<vector<int>> dist(n, vector<int>(n));
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            fn >> dist[i][j];
+
+    fn.close();
+
+    std::ifstream fu(usuariosFile);
+    if (!fu) throw std::runtime_error("No se pudo abrir " + usuariosFile);
+
+    int U;
+    fu >> U;
+    if (!fu) throw std::runtime_error("Error leyendo U en " + usuariosFile);
+
+    vector<Usuario> usuarios(U);
+
+    for (int k = 0; k < U; ++k) {
+        fu >> usuarios[k].tiempo_total;
+
         usuarios[k].valor_nodo.resize(n);
-        for (int i = 0; i < n; i++) {
-            archivoUsuarios >> usuarios[k].valor_nodo[i];
-        }
-        
-        usuarios[k].valor_arcos.resize(n, vector<int>(n));
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                archivoUsuarios >> usuarios[k].valor_arcos[i][j];
-            }
-        }
+        for (int i = 0; i < n; ++i)
+            fu >> usuarios[k].valor_nodo[i];
+
+        usuarios[k].valor_arcos.assign(n, vector<int>(n));
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j)
+                fu >> usuarios[k].valor_arcos[i][j];
     }
-    
-    archivoUsuarios.close();
-    
-    return Instance(n, nodos, distancias, usuarios);
+
+    fu.close();
+
+    return Instance(n, nodos, dist, usuarios);
 }

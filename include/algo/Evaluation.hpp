@@ -3,12 +3,8 @@
 #include "../model/Instance.hpp"
 #include "../model/Solution.hpp"
 
-#include <algorithm>
-
-double evaluar(const Solution& S,
-               const Instance& I,
-               const Usuario& u);
-
-bool recalcularCronograma(Solution& S,
-                          const Instance& I,
-                          const Usuario& u);
+// Recalcula tau, R y valor en S.
+// Retorna true si S es factible (ventanas y T_k), false si no.
+bool evaluar(Solution& S,
+             const Instance& I,
+             const Usuario& u);

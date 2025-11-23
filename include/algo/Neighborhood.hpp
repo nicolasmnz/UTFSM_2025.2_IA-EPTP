@@ -2,23 +2,20 @@
 
 #include "../model/Instance.hpp"
 #include "../model/Solution.hpp"
-
+#include <vector>
 #include <random>
-#include <algorithm>
 
-using namespace std;
+// Genera vecinos agregando un nodo no visitado en cualquier posición
+std::vector<Solution> agregarNodo(const Solution& S,
+                                  const Instance& I,
+                                  std::mt19937& rng);
 
+// Genera vecinos eliminando un nodo existente (excepto el depósito)
+std::vector<Solution> eliminarNodo(const Solution& S,
+                                   const Instance& I,
+                                   std::mt19937& rng);
 
-vector<Solution> agregarNodo(const Solution& S,
-                             const Instance& I,
-                             mt19937& rng);
-            
-vector<Solution> eliminarNodo(const Solution& S,
-                              const Instance& I,
-                              mt19937& rng);
-
-vector<Solution> twoOpt(const Solution& S, const Instance& I);
-
-vector<Solution> generarVecindad(const Solution& S,
-                                 const Instance& I,
-                                 mt19937& rng);
+// Combina ambas vecindades
+std::vector<Solution> generarVecindad(const Solution& S,
+                                      const Instance& I,
+                                      std::mt19937& rng);

@@ -1,14 +1,28 @@
 #pragma once
 
 #include <vector>
-
-using namespace std;
+#include <limits>
 
 struct Solution
 {
-    vector<int> tour;       // nodos en orden
-    vector<int> tau;        // tiempo de inicio efectivo por nodo
-    int R;                  // tiempo total del tour
-    double valor;           // valor de la funcion de evaluacion (nodos + arcos)
-    int usuario;            // indice del usario que corresponde solucion
+    // nodos del tour en orden, incluyendo depósito al inicio y al final
+    std::vector<int> tour;
+
+    // tiempos de inicio de servicio en cada posición del tour
+    std::vector<int> tau;
+
+    // tiempo total del tour (momento de regreso al depósito)
+    int R = 0;
+
+    // valor de la función objetivo (beneficio nodos + arcos)
+    int valor = std::numeric_limits<int>::min();
+
+    Solution() = default;
+
+    void limpiar() {
+        tour.clear();
+        tau.clear();
+        R = 0;
+        valor = std::numeric_limits<int>::min();
+    }
 };

@@ -1,20 +1,15 @@
 #pragma once
 
-#include "../model/Instance.hpp"
 #include "../model/Solution.hpp"
+#include <string>
 
-#include <filesystem>
+// Imprime solución por stdout (para debug)
+void imprimirSolucion(const Solution& S);
 
-using namespace std;
-namespace fs = std::filesystem;
-
-void print      (const Solution& S,
-                 const Instance& I,
-                 const Usuario& u,
-                 int idUsuario);
-                 
-void write     (const Solution& S,
-                 const Instance& I,
-                 const Usuario& u,
-                 int idUsuario,
-                 const fs::path& carpetaSalida);
+// Agrega una fila a un CSV de medición: instancia, usuario, iteración, valor, tiempo(ms)
+void guardarCSV(const std::string& file,
+                const std::string& instancia,
+                int usuario,
+                int iteracion,
+                int valor,
+                double tiempo_ms);
