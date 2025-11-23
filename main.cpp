@@ -19,7 +19,7 @@ void procesarInstancia(const std::string& nombreInstancia,
                        std::mt19937& rng,
                        bool imprimir)
 {
-    const int maxIter = 30;  // se puede ajustar
+    const int maxIter = 60;  // se puede ajustar
 
     for (int k = 0; k < I.cantidadUsuarios(); ++k)
     {
