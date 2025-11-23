@@ -3,6 +3,8 @@
 #include "../model/Instance.hpp"
 #include "../model/Solution.hpp"
 
+#include <algorithm>
+
 double evaluar(const Solution& S,
                const Instance& I,
                const Usuario& u);

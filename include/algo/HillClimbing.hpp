@@ -2,7 +2,9 @@
 
 #include "../model/Instance.hpp"
 #include "../model/Solution.hpp"
+
 #include <random>
+#include <algorithm>
 
 using namespace std;
 

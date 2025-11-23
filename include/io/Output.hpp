@@ -8,7 +8,12 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-void print_write(const Solution& S,
+void print      (const Solution& S,
+                 const Instance& I,
+                 const Usuario& u,
+                 int idUsuario);
+                 
+void write     (const Solution& S,
                  const Instance& I,
                  const Usuario& u,
                  int idUsuario,
