@@ -31,7 +31,7 @@ void procesarInstancia(const std::string& nombreInstancia,
             // Solución inicial
             Solution S0 = construirSolucionInicial(I, u, rng);
 
-            // Hill Climbing best–improvement
+            // Hill Climbing first–improvement
             Solution Sopt = hillClimbing(I, u, S0, maxIter, rng);
 
             auto t1 = std::chrono::high_resolution_clock::now();
@@ -45,6 +45,14 @@ void procesarInstancia(const std::string& nombreInstancia,
                        maxIter,
                        Sopt.valor,
                        tiempo_ms);
+            
+            // Guardar salida final por usuario
+            guardarSalidaUsuario("data/resultados",
+                                 nombreInstancia,
+                                 k,                   // id_usuario
+                                 u,
+                                 Sopt);               // mejor solución
+
 
             // Opcional: imprimir por pantalla (solo en modo ejemplo)
             if (imprimir)
