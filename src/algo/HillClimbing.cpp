@@ -1,6 +1,18 @@
 #include "../../include/algo/HillClimbing.hpp"
 #include "../../include/algo/Neighborhood.hpp"
 #include "../../include/algo/Evaluation.hpp"
+#include "../../include/algo/Construction.hpp"
+
+
+static Solution restart(const Instance& I,
+                        const Usuario& u,
+                        std::mt19937& rng)
+{
+    Solution S0 = construirSolucionInicial(I, u, rng);
+    evaluar(S0, I, u);   // asumimos que la construcción/reparación la deja viable
+    return S0;
+}
+
 
 Solution hillClimbing(const Instance& I,
                       const Usuario& u,
@@ -33,7 +45,7 @@ Solution hillClimbing(const Instance& I,
             }
         }
 
-        if (!hayMejora)
+        if (!hayMejora) 
             break;  // no encontramos mejora en esta iteración => terminamos
     }
 
