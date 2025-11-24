@@ -4,12 +4,14 @@
 #include "../../include/algo/Construction.hpp"
 
 
+#define NUM_RESTARTS 50
+
 static Solution restart(const Instance& I,
                         const Usuario& u,
                         std::mt19937& rng)
 {
     Solution S0 = construirSolucionInicial(I, u, rng);
-    evaluar(S0, I, u);   // asumimos que la construcción/reparación la deja viable
+    evaluar(S0, I, u);   
     return S0;
 }
 
@@ -44,9 +46,15 @@ Solution hillClimbing(const Instance& I,
                 break;                       // salimos del for de vecinos
             }
         }
-
-        if (!hayMejora) 
-            break;  // no encontramos mejora en esta iteración => terminamos
+        
+        int restartIntento = NUM_RESTARTS;
+        if (!hayMejora && restartIntento > 0) {
+            S = restart(I, u, rng);
+            restartIntento--;
+            hayMejora = true;
+        }
+        if (!hayMejora && restartIntento == 0) 
+            break ;  // no hay mejora en esta iteración => terminamos
     }
 
     return S;
